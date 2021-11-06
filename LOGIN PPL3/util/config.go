@@ -39,12 +39,12 @@ func NewConfigurations(logger log.Logger) *Configurations {
 	level.Debug(logger).Log("db connection string", conn)
 
 	// viper.SetDefault("SERVER_ADDRESS", "0.0.0.0:8088")
-	// viper.SetDefault("SERVER_PORT", "8088")
-	viper.SetDefault("DB_HOST", "sadhelx_db")
+	viper.SetDefault("SERVER_PORT", "8088")
+	//viper.SetDefault("DB_HOST", "sadhelx_db")
 	viper.SetDefault("DB_HOST", "localhost")
 	viper.SetDefault("DB_NAME", "sdx_usermgmt_db")
-	viper.SetDefault("DB_USER", "sadhelx_usr")
-	viper.SetDefault("DB_PASSWORD", "s4dhelx")
+	viper.SetDefault("DB_USER", "postgres")
+	viper.SetDefault("DB_PASSWORD", "irfannoor123")
 	viper.SetDefault("DB_PORT", "5432")
 	// viper.SetDefault("DB_PORT", "54321")
 

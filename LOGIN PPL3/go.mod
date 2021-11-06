@@ -9,9 +9,11 @@ require (
 	github.com/go-playground/universal-translator v0.17.0
 	github.com/google/uuid v1.1.2
 	github.com/gorilla/mux v1.8.0
+	github.com/jinzhu/gorm v1.9.16 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
-	github.com/lib/pq v1.9.0
+	github.com/lib/pq v1.10.3
 	github.com/mitchellh/mapstructure v1.4.1 // indirect
+	github.com/rs/cors v1.8.0 // indirect
 	github.com/sendgrid/rest v2.6.3+incompatible // indirect
 	github.com/sendgrid/sendgrid-go v3.8.0+incompatible
 	github.com/spf13/viper v1.7.1
