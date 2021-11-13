@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="52" height="58" viewBox="0 0 52 58">
+    <defs>
+        <path id="3vmw9u8l5b" d="M27 1.155l17.65 10.19c1.238.715 2 2.035 2 3.464v20.382c0 1.429-.762 2.75-2 3.464L27 48.845c-1.238.715-2.762.715-4 0L5.35 38.655c-1.238-.715-2-2.035-2-3.464V14.809c0-1.429.762-2.75 2-3.464L23 1.155c1.238-.715 2.762-.715 4 0z"/>
+        <path id="hr443f9yxc" d="M0 0H24V24H0z"/>
+        <filter id="22lamk2wna" width="114.6%" height="125.5%" x="-7.3%" y="-8.8%" filterUnits="objectBoundingBox">
+            <feOffset dy="2" in="SourceAlpha" result="shadowOffsetOuter1"/>
+            <feGaussianBlur in="shadowOffsetOuter1" result="shadowBlurOuter1" stdDeviation="2"/>
+            <feColorMatrix in="shadowBlurOuter1" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.163762019 0"/>
+        </filter>
+    </defs>
+    <g fill="none" fill-rule="evenodd">
+        <g>
+            <g>
+                <g transform="translate(-154 -662) translate(155 664)">
+                    <use fill="#000" filter="url(#22lamk2wna)" xlink:href="#3vmw9u8l5b"/>
+                    <use fill="#0C8EFF" xlink:href="#3vmw9u8l5b"/>
+                </g>
+                <g transform="translate(-154 -662) translate(155 664) translate(13 13)">
+                    <mask id="bnn9uopoad" fill="#fff">
+                        <use xlink:href="#hr443f9yxc"/>
+                    </mask>
+                    <path fill="#FFF" d="M21.5 6.5v11L12 23l-9.5-5.5v-11L12 1l9.5 5.5zm-17 1.153v8.694l7.5 4.342 7.5-4.342V7.653L12 3.311 4.5 7.653zm4.672 7.175C8.422 14.078 8 13.061 8 12c0-1.06.421-2.078 1.172-2.828C9.922 8.422 10.939 8 12 8c1.06 0 2.078.421 2.828 1.172C15.578 9.922 16 10.939 16 12c0 1.06-.421 2.078-1.172 2.828C14.078 15.578 13.061 16 12 16c-1.06 0-2.078-.421-2.828-1.172zm4.242-1.414C13.79 13.04 14 12.53 14 12c0-.53-.21-1.04-.586-1.414C13.04 10.21 12.53 10 12 10c-.53 0-1.04.21-1.414.586C10.21 10.96 10 11.47 10 12c0 .53.21 1.04.586 1.414.375.375.884.586 1.414.586.53 0 1.04-.21 1.414-.586z" mask="url(#bnn9uopoad)"/>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

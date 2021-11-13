@@ -1,0 +1,25 @@
+version: "3.3"  # optional since v1.27.0
+services:
+  svc:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - SERVER=DEVELOPMENT
+    ports:
+      - 8088:8088
+    volumes:
+     - usermgmt_svc_avatar:/assets/user-avatar
+    restart: unless-stopped
+    networks:
+      - net
+    
+
+volumes:
+  usermgmt_svc_avatar:
+
+
+networks:
+  net:
+    external:
+      name: sadhelx_sadhelx_net
