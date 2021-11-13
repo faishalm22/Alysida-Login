@@ -82,8 +82,27 @@ const SignIn = ({navigation}) => {
               width: '100%',
             }}
             onPress={() => handleGoTo('ForgotPassword')}>
+            <Text
+              style={{
+                fontFamily: 'RobotoRegular',
+                fontSize: 12,
+                color: '#0c8eff',
+                textAlign: 'center',
+              }}>
+              Forgot your login details?{' '}
+              <Text
+                style={{
+                  fontFamily: 'RobotoRegular',
+                  fontSize: 12,
+                  color: '#0c8eff',
+                  textAlign: 'center',
+                  fontWeight: 'bold',
+                }}>
+                Get help logging in.
+              </Text>
+            </Text>
           </TouchableOpacity>
-          <Gap height={40} />
+          <Gap height={30} />
           <View
             style={{
               height: 1,
@@ -93,10 +112,10 @@ const SignIn = ({navigation}) => {
             <Text
               style={{
                 position: 'absolute',
-                left: '48%',
-                bottom: 10,
+                left: '45%',
+                bottom: -10,
                 backgroundColor: 'white',
-               // textAlign: 'center',
+                textAlign: 'center',
                 height: 25,
                 width: 25,
                 fontSize: 16,
@@ -105,9 +124,9 @@ const SignIn = ({navigation}) => {
               OR
             </Text>
           </View>
-          <Gap height={50} />
+          <Gap height={40} />
           <ButtonGoogle />
-          <Gap height={50} />
+          <Gap height={30} />
           <View style={styles.signInWrapper}>
             <Text style={styles.textOuter}>Not a member?</Text>
             <Text style={styles.textInner} onPress={() => handleGoTo('SignUp')}>

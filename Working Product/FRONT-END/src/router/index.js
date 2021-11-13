@@ -20,18 +20,18 @@ const Stack = createStackNavigator();
 //const Tab = createBottomTabNavigator();
 
 const MainApp = () => {
-  return (
-    // <Tab.Navigator
-    //   sceneContainerStyle={{height: 1000}}
-    //   tabBar={(props) => <BottomNavigator {...props} />}
-    //   initialRouteName="Feed">
-    //   <Tab.Screen name="Feed" component={Feed} />
-    //   <Tab.Screen name="Search" component={Search} />
-    //   <Tab.Screen name="Cycling" component={Cycling} />
-    //   <Tab.Screen name="Safety" component={SafetyStackScreen} />
-    //   <Tab.Screen name="Profile" component={ProfileScreen} />
-    // </Tab.Navigator>
-  )
+  // return (
+  //   // <Tab.Navigator
+  //   //   sceneContainerStyle={{height: 1000}}
+  //   //   tabBar={(props) => <BottomNavigator {...props} />}
+  //   //   initialRouteName="Feed">
+  //   //   <Tab.Screen name="Feed" component={Feed} />
+  //   //   <Tab.Screen name="Search" component={Search} />
+  //   //   <Tab.Screen name="Cycling" component={Cycling} />
+  //   //   <Tab.Screen name="Safety" component={SafetyStackScreen} />
+  //   //   <Tab.Screen name="Profile" component={ProfileScreen} />
+  //   // </Tab.Navigator>
+  // )
 };
 
 // const ProfileScreen = () => {
