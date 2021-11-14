@@ -85,21 +85,11 @@ const SignIn = ({navigation}) => {
             <Text
               style={{
                 fontFamily: 'RobotoRegular',
-                fontSize: 12,
+                fontSize: 11,
                 color: '#0c8eff',
-                textAlign: 'center',
+                textAlign: 'center'
               }}>
-              Forgot your login details?{' '}
-              <Text
-                style={{
-                  fontFamily: 'RobotoRegular',
-                  fontSize: 12,
-                  color: '#0c8eff',
-                  textAlign: 'center',
-                  fontWeight: 'bold',
-                }}>
-                Get help logging in.
-              </Text>
+              Forgot your login password?{' '}
             </Text>
           </TouchableOpacity>
           <Gap height={30} />

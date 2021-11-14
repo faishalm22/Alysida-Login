@@ -64,16 +64,18 @@ const styles = StyleSheet.create({
     width: 235,
   },
   titleBanner: {
-    fontFamily: 'SarabunSemiBold',
+    fontFamily: 'SarabunBold',
     fontSize: 16,
     color: '#757575',
-   // marginBottom:0,
+    left: 100,
+    bottom: 50
   },
   subtitleBanner: {
-    fontFamily: 'SarabunSemiBold',
+    fontFamily: 'SarabunBold',
     fontSize: 16,
     color: '#757575',
-    marginBottom:50,
+    left: 110,
+    bottom: 50
   },
   containerLogin: {
     backgroundColor: '#90caf9',
