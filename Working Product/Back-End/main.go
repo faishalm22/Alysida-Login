@@ -12,7 +12,7 @@ import (
 	"syscall"
 
 	"shadelx-be-usermgmt/service"
-	"shadelx-be-usermgmt/service/pkg/mailer"
+	//"shadelx-be-usermgmt/service/pkg/mailer"
 	"shadelx-be-usermgmt/service/repository"
 	"shadelx-be-usermgmt/util"
 
@@ -62,10 +62,8 @@ func main() {
 	var srv service.Service
 	{
 		svcRepository := repository.NewRepo(db, logger)
-		svcMailer := mailer.NewSGMailService(configs)
 
 		srv = service.NewService(
-			svcMailer,
 			svcRepository,
 			configs,
 			logger,

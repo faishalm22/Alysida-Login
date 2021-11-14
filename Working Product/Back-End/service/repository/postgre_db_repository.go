@@ -23,7 +23,7 @@ func NewRepo(db *sql.DB, logger log.Logger) datastruct.DBRepository {
 }
 
 const (
-	queryInsertUser        = "INSERT INTO tbl_mstr_user(user_id, username, email, firstname, lastname, phonenumber, password, created_date, created_by, updated_date, updated_by, token_hash, email_verified, image_file) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14);"
+	queryInsertUser        = "INSERT INTO tbl_mstr_user(user_id, username, email, name, password, phonenumber, created_date, updated_date, updated_by, email_verified, image_file, identity_type, identity_no, address_ktp, domisili) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15);"
 	queryGetUserByEmail    = "SELECT * FROM tbl_mstr_user WHERE email=$1 LIMIT 1;"
 	queryGetUserByUsername = "SELECT * FROM tbl_mstr_user WHERE username=$1 LIMIT 1;"
 	queryEmailIsExists     = "SELECT EXISTS(SELECT 1 FROM tbl_mstr_user WHERE email=$1);"
@@ -41,17 +41,17 @@ func (repo *repo) CreateUser(ctx context.Context, user *datastruct.UserInformati
 		user.UserID,
 		user.Username,
 		user.Email,
-		user.Firstname,
-		user.Lastname,
+		user.Name,
 		user.Phonenumber,
 		user.Password,
 		user.CreatedDate,
-		user.CreatedBy,
 		user.UpdatedDate,
-		user.UpdatedBy,
-		user.TokenHash,
-		user.EmailVerified,
-		user.ImageFile,
+		user.Email_verified,
+		user.Image_file,
+		user.Identity_type,
+		user.Identity_no,
+		user.Address_ktp,
+		user.Domisili,
 	)
 	if err != nil {
 		level.Error(repo.logger).Log("err", err.Error())
@@ -73,17 +73,17 @@ func (repo *repo) GetUserByEmail(ctx context.Context, email string) (*datastruct
 		&user.UserID,
 		&user.Username,
 		&user.Email,
-		&user.Firstname,
-		&user.Lastname,
+		&user.Name,
 		&user.Phonenumber,
 		&user.Password,
-		&user.CreatedBy,
 		&user.CreatedDate,
-		&user.UpdatedBy,
 		&user.UpdatedDate,
-		&user.TokenHash,
-		&user.EmailVerified,
-		&user.ImageFile,
+		&user.Email_verified,
+		&user.Image_file,
+		&user.Identity_type,
+		&user.Identity_no,
+		&user.Address_ktp,
+		&user.Domisili,
 	)
 	if err != nil {
 		level.Error(repo.logger).Log("err", err.Error())
@@ -105,17 +105,17 @@ func (repo *repo) GetUserByUsername(ctx context.Context, username string) (*data
 		&user.UserID,
 		&user.Username,
 		&user.Email,
-		&user.Firstname,
-		&user.Lastname,
+		&user.Name,
 		&user.Phonenumber,
 		&user.Password,
-		&user.CreatedBy,
 		&user.CreatedDate,
-		&user.UpdatedBy,
 		&user.UpdatedDate,
-		&user.TokenHash,
-		&user.EmailVerified,
-		&user.ImageFile,
+		&user.Email_verified,
+		&user.Image_file,
+		&user.Identity_type,
+		&user.Identity_no,
+		&user.Address_ktp,
+		&user.Domisili,
 	)
 	if err != nil {
 		level.Error(repo.logger).Log("err", err.Error())

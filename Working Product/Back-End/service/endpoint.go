@@ -4,9 +4,7 @@ import (
 	"context"
 	"encoding/json"
 
-	//"errors"
 	"fmt"
-	//"mime/multipart"
 	"net/http"
 	"shadelx-be-usermgmt/util"
 
@@ -49,14 +47,10 @@ type (
 		UserID    uint32 `json:"user_id,omitempty"`
 		Username  string `json:"username,omitempty"`
 		Email     string `json:"email,omitempty"`
-		Firstname string `json:"firstname,omitempty"`
+		Name string `json:"name,omitempty"`
 		ImageFile string `json:"image_file,omitempty"`
 	}
 
-	tokenRes struct {
-		TokenAccess  string `json:"token_access,omitempty"`
-		TokenRefresh string `json:"token_refresh,omitempty"`
-	}
 )
 
 func MakeAuthEndpoints(svc Service) Endpoints {
@@ -70,30 +64,21 @@ func MakeAuthEndpoints(svc Service) Endpoints {
 func makeLoginEndopint(svc Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(LoginReq)
-		user, token, err := svc.Login(ctx, req.Identity, req.Password)
+		user, err := svc.Login(ctx, req.Identity, req.Password)
 		if err != nil {
 			return Response{Status: false, Message: err.Error()}, nil
 		}
-
-		var tokenRes tokenRes
-		tokenRes.TokenAccess = token["access_token"]
-		tokenRes.TokenRefresh = token["refresh_token"]
 
 		var userRes userRes
 		userRes.UserID = user.UserID
 		userRes.Username = user.Username
 		userRes.Email = user.Email
-		userRes.Firstname = user.Firstname
-		userRes.ImageFile = user.ImageFile
-
-		data := make(map[string]interface{})
-		data["user"] = userRes
-		data["token"] = tokenRes
+		userRes.Name = user.Name
+		userRes.ImageFile = user.Image_file
 
 		return Response{
 			Status:  true,
 			Message: util.MsgLoginSuccess,
-			Data:    data,
 		}, nil
 	}
 }
