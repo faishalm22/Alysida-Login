@@ -8,6 +8,7 @@ import ForgotPassword from './ForgotPassword';
 import WelcomeAuth from './WelcomeAuth';
 import Profile from './Profile';
 import ProfileMenus from './ProfileMenus';
+import Home from './Home';
 
 export {
   SignIn,
@@ -20,4 +21,5 @@ export {
   SuccessCreatePassword,
   Profile,
   ProfileMenus,
+  Home
 };
