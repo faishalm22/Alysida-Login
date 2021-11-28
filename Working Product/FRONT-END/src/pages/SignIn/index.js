@@ -50,7 +50,7 @@ const SignIn = ({navigation}) => {
           <Gap height={30} />
           <TextInputIcon
             label="Username or Email"
-            placeholder="Enter your full name"
+            placeholder="Enter your username or email"
             autoCapitalize="none"
             sourceImageLeft={UserIcon}
             sourceImageLeftActive={UserIconActive}
