@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"encoding/json"
-
 	"fmt"
 	"net/http"
 	"shadelx-be-usermgmt/util"
@@ -43,14 +42,18 @@ type (
 		Data    interface{} `json:"data,omitempty"`
 	}
 
+	tokenRes struct {
+		TokenAccess  string `json:"token_access,omitempty"`
+		TokenRefresh string `json:"token_refresh,omitempty"`
+	}
+
 	userRes struct {
 		UserID    uint32 `json:"user_id,omitempty"`
 		Username  string `json:"username,omitempty"`
 		Email     string `json:"email,omitempty"`
-		Name string `json:"name,omitempty"`
+		Name      string `json:"name,omitempty"`
 		ImageFile string `json:"image_file,omitempty"`
 	}
-
 )
 
 func MakeAuthEndpoints(svc Service) Endpoints {
@@ -64,10 +67,14 @@ func MakeAuthEndpoints(svc Service) Endpoints {
 func makeLoginEndopint(svc Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(LoginReq)
-		user, err := svc.Login(ctx, req.Identity, req.Password)
+		user, token, err := svc.Login(ctx, req.Identity, req.Password)
 		if err != nil {
 			return Response{Status: false, Message: err.Error()}, nil
 		}
+
+		var tokenRes tokenRes
+		tokenRes.TokenAccess = token["access_token"]
+		tokenRes.TokenRefresh = token["refresh_token"]
 
 		var userRes userRes
 		userRes.UserID = user.UserID
@@ -76,9 +83,14 @@ func makeLoginEndopint(svc Service) endpoint.Endpoint {
 		userRes.Name = user.Name
 		userRes.ImageFile = user.Image_file
 
+		data := make(map[string]interface{})
+		data["user"] = userRes
+		data["token"] = tokenRes
+
 		return Response{
 			Status:  true,
 			Message: util.MsgLoginSuccess,
+			Data:    data,
 		}, nil
 	}
 }

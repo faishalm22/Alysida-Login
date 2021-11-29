@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"database/sql"
-
 	"errors"
 	"fmt"
 	"strings"
@@ -12,6 +11,7 @@ import (
 	"github.com/go-kit/kit/log/level"
 
 	"shadelx-be-usermgmt/datastruct"
+	"shadelx-be-usermgmt/service/pkg/jwt"
 	"shadelx-be-usermgmt/util"
 )
 
@@ -38,7 +38,7 @@ func NewService(repo datastruct.DBRepository, configs *util.Configurations, logg
 	}
 }
 
-func (s *service) Login(ctx context.Context, identity string, password string) (*datastruct.UserInformation, error) {
+func (s *service) Login(ctx context.Context, identity string, password string) (*datastruct.UserInformation, map[string]string, error) {
 
 	var err error
 	var user *datastruct.UserInformation
@@ -46,34 +46,52 @@ func (s *service) Login(ctx context.Context, identity string, password string) (
 	if strings.Contains(identity, "@") {
 		user, err = s.repository.GetUserByEmail(ctx, identity)
 		if err != nil && err == sql.ErrNoRows {
-			return nil, errors.New(util.ErrInvalidUsernameEmail)
+			return nil, nil, errors.New(util.ErrInvalidUsernameEmail)
 		}
 
 		if err != nil {
 			level.Error(s.logger).Log("err", err)
-			return nil, err
+			return nil, nil, err
 		}
 	} else {
 		user, err = s.repository.GetUserByUsername(ctx, identity)
 		if err != nil && err == sql.ErrNoRows {
-			return nil, errors.New(util.ErrInvalidUsernameEmail)
+			return nil, nil, errors.New(util.ErrInvalidUsernameEmail)
 		}
 		if err != nil {
 			level.Error(s.logger).Log("err", err)
-			return nil, err
+			return nil, nil, err
 		}
 	}
 
 	if !user.Email_verified {
-		return nil, errors.New(util.ErrEmailUnverified)
+		return nil, nil, errors.New(util.ErrEmailUnverified)
 	}
 
 	if err := util.PasswordCompare(user.Password, password); err != nil {
 		fmt.Println(err)
-		return nil, errors.New(util.ErrInvalidPassword)
+		return nil, nil, errors.New(util.ErrInvalidPassword)
 	}
 
-	return user, nil
+	accessToken, err := jwt.GenerateAccessToken(fmt.Sprint(user.UserID), int64(s.configs.JwtExpiration), s.configs.JwtSecret)
+	if err != nil {
+		level.Error(s.logger).Log("msg", "unable to generate access token", "err", err)
+		return nil, nil, errors.New(util.ErrLoginToken)
+	}
+
+	custKey := jwt.CreateCustomKey(user.TokenHash, fmt.Sprint(user.UserID))
+
+	refreshToken, err := jwt.GenerateRefreshToken(fmt.Sprint(user.UserID), custKey, s.configs.JwtSecret)
+	if err != nil {
+		level.Error(s.logger).Log("msg", "unable to generate refresh token", "err", err)
+		return nil, nil, errors.New(util.ErrLoginToken)
+	}
+
+	token := make(map[string]string)
+	token["access_token"] = accessToken
+	token["refresh_token"] = refreshToken
+
+	return user, token, nil
 }
 
 func (s *service) UsernameAvailability(ctx context.Context, username string) (string, error) {
