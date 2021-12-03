@@ -47,7 +47,7 @@ func main() {
 	}
 	loggingMiddleware := auth.LoggingMiddleware(logger)
 
-	level.Info(logger).Log("msg", "service started") //buat nampilin yang level, service dll pas di run nanti
+	level.Info(logger).Log("msg", "service started")
 	defer level.Info(logger).Log("msg", "service ended")
 
 	configs := util.NewConfigurations(logger)
@@ -101,23 +101,13 @@ func initDb(confs *util.Configurations) {
 		confs.DBUser, confs.DBPass, confs.DBName)
 
 	db, err = sql.Open("postgres", psqlInfo)
-	defer db.Close()
-
+	if err != nil {
+		panic(err)
+	}
 	err = db.Ping()
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("\nSuccessfully connected to database!\n")
+	fmt.Println("Successfully connected!")
+
 }
-
-//insertInfo := `insert into "tbl_mstr_user" ("user_id", "username", "email", "firstname", "lastname", "phonenumber", "password") values (1, "irfanwahid", "irfannoor681@gmail.com", "irfan", "wahid", "089509981288", "irfannoor123") `
-//_, e := db.Exec(insertInfo)
-//CheckError(e)
-
-//}
-
-//func CheckError(err error) {
-//	if err != nil {
-//		panic(err)
-//	}
-//}

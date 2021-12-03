@@ -17,7 +17,7 @@ import (
 
 type (
 	Service interface {
-		Login(ctx context.Context, usernmae string, password string) (*datastruct.UserInformation, error)
+		Login(ctx context.Context, usernmae string, password string) (*datastruct.UserInformation, map[string]string, error)
 		UsernameAvailability(ctx context.Context, identity string) (string, error)
 		EmailAvailability(ctx context.Context, identity string) (string, error)
 	}

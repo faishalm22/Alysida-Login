@@ -38,13 +38,13 @@ func NewConfigurations(logger log.Logger) *Configurations {
 	level.Debug(logger).Log("msg", "found database url in env, connection string is formed by parsing it")
 	level.Debug(logger).Log("db connection string", conn)
 
-	// viper.SetDefault("SERVER_ADDRESS", "0.0.0.0:8088")
+	viper.SetDefault("SERVER_ADDRESS", "0.0.0.0:8088")
 	viper.SetDefault("SERVER_PORT", "8088")
 	//viper.SetDefault("DB_HOST", "sadhelx_db")
-	viper.SetDefault("DB_HOST", "localhost")
-	viper.SetDefault("DB_NAME", "sdx_usermgmt_db")
-	viper.SetDefault("DB_USER", "postgres")
-	viper.SetDefault("DB_PASSWORD", "irfannoor123")
+	viper.SetDefault("DB_HOST", "103.157.96.115")
+	viper.SetDefault("DB_NAME", "db_alysida")
+	viper.SetDefault("DB_USER", "alysida")
+	viper.SetDefault("DB_PASSWORD", "andromeda")
 	viper.SetDefault("DB_PORT", "5432")
 	// viper.SetDefault("DB_PORT", "54321")
 
