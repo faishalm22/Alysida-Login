@@ -13,7 +13,7 @@ import {
   CreateNewPassword,
   Profile,
   ProfileMenus,
-  Home
+ // Home
 } from '../pages';
 import {BottomNavigator} from '../components';
 
@@ -97,11 +97,11 @@ const Router = () => {
         component={SignIn}
         options={{headerShown: false}}
       />
-      <Stack.Screen
+      {/* <Stack.Screen
         name="Home"
         component={Home}
         options={{headerShown: false}}
-      />
+      /> */}
       
       {/* <Stack.Screen
         name="SignUp"

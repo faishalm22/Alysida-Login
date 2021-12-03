@@ -1,5 +1,6 @@
 import React from 'react';
 import {StyleSheet, Text, View, ImageBackground} from 'react-native';
+//import {TouchableOpacity} from 'react-native-gesture-handler';
 import {Buttons, Gap} from '../../components/atoms';
 import {ButtonGoogle} from '../../components/molecules';
 import {DummyBanner} from '../../assets';
@@ -29,7 +30,7 @@ const WelcomeAuth = ({navigation}) => {
             backgroundcolor="#0c8eff"
             backgroundcoloronpress="#0c8eff"
             textcolor="white"
-            onPress={() => handleGoTo('Home')}
+            onPress={() => handleGoTo('SignIn')}
           />
         </View>
         <Gap height={10} />
