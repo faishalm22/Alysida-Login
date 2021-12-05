@@ -1,7 +1,9 @@
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-
+import {View,StyleSheet, Image} from 'react-native';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import { BackIcon } from '../assets';
 import {
   SplashScreen,
   WelcomeAuth,
@@ -13,15 +15,23 @@ import {
   CreateNewPassword,
   Profile,
   ProfileMenus,
- // Home
+  Home
 } from '../pages';
 import {BottomNavigator} from '../components';
 
 const Stack = createStackNavigator();
 //const Tab = createBottomTabNavigator();
 
-const MainApp = () => {
-  // return (
+const MainApp = ({navigation}) => {
+  const handleGoTo = (screen) => {
+    navigation.navigate(screen);
+  };
+   return (
+       <View style={styles.header}>
+                <TouchableOpacity onPress={() => handleGoTo('WelcomeAuth')}>
+            <Image source={BackIcon} style={styles.iconBack} />
+          </TouchableOpacity>
+        </View>     
   //   // <Tab.Navigator
   //   //   sceneContainerStyle={{height: 1000}}
   //   //   tabBar={(props) => <BottomNavigator {...props} />}
@@ -32,7 +42,7 @@ const MainApp = () => {
   //   //   <Tab.Screen name="Safety" component={SafetyStackScreen} />
   //   //   <Tab.Screen name="Profile" component={ProfileScreen} />
   //   // </Tab.Navigator>
-  // )
+   )
 };
 
 // const ProfileScreen = () => {
@@ -97,11 +107,11 @@ const Router = () => {
         component={SignIn}
         options={{headerShown: false}}
       />
-      {/* <Stack.Screen
+      <Stack.Screen
         name="Home"
         component={Home}
         options={{headerShown: false}}
-      /> */}
+      />
       
       {/* <Stack.Screen
         name="SignUp"
@@ -152,4 +162,15 @@ const Router = () => {
   );
 };
 
+ const styles = StyleSheet.create({
+   header: {
+     height: 20,
+     justifyContent: 'center',
+   },
+   iconBack: {
+     width: 20,
+     height: 20,
+  
+   },
+});
 export default Router;
