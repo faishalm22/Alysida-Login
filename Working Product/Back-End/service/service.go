@@ -20,6 +20,7 @@ type (
 		Login(ctx context.Context, usernmae string, password string) (*datastruct.UserInformation, map[string]string, error)
 		UsernameAvailability(ctx context.Context, identity string) (string, error)
 		EmailAvailability(ctx context.Context, identity string) (string, error)
+		GetOTP(ctx context.Context, usernmae string) (*datastruct.UserInformation, error)
 	}
 
 	service struct {
@@ -116,4 +117,29 @@ func (s *service) EmailAvailability(ctx context.Context, email string) (string, 
 		return "", errors.New(util.ErrEmailAvailability)
 	}
 	return util.MsgEmailAvail, nil
+}
+
+//Get OTP
+func (s *service) GetOTP(ctx context.Context, identity string) (*datastruct.UserInformation, error) {
+
+	var err error
+	var user *datastruct.UserInformation
+
+	if strings.Contains(identity, "@") {
+		user, err = s.repository.GetUserByEmail(ctx, identity)
+		if err != nil && err == sql.ErrNoRows {
+			return nil, errors.New(util.ErrInvalidUsernameEmail)
+		}
+
+		if err != nil {
+			level.Error(s.logger).Log("err", err)
+			return nil, err
+		}
+	} 
+
+	if !user.Email_verified {
+		return nil, errors.New(util.ErrEmailUnverified)
+	}
+
+	return user, nil
 }

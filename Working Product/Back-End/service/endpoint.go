@@ -17,12 +17,18 @@ type (
 		Login                endpoint.Endpoint
 		UsernameAvailability endpoint.Endpoint
 		EmailAvailability    endpoint.Endpoint
+		GetOTP               endpoint.Endpoint
 	}
 
 	// LoginReq data format
 	LoginReq struct {
 		Identity string
 		Password string
+	}
+
+	// OTPreq data format
+	OTPreq struct {
+		Identity string
 	}
 
 	// UsernameAvailabilityReq data format
@@ -61,6 +67,7 @@ func MakeAuthEndpoints(svc Service) Endpoints {
 		Login:                makeLoginEndopint(svc),
 		UsernameAvailability: makeUsernameAvailabilityRequest(svc),
 		EmailAvailability:    makeEmailAvailabilityRequest(svc),
+		GetOTP:               makeGetOTPEndpoint(svc),
 	}
 }
 
@@ -97,6 +104,33 @@ func makeLoginEndopint(svc Service) endpoint.Endpoint {
 
 func decodeLoginRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
 	var req LoginReq
+
+	if e := json.NewDecoder(r.Body).Decode(&req); e != nil {
+		return nil, e
+	}
+	return req, nil
+}
+
+//untuk forgot password
+func makeGetOTPEndpoint(svc Service) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req := request.(OTPreq)
+		user, err := svc.GetOTP(ctx, req.Identity)
+		if err != nil {
+			return Response{Status: false, Message: err.Error()}, nil
+		}
+
+		sendEmail(user.Email)
+
+		return Response{
+			Status:  true,
+			Message: util.MsgGeneratedPasswordResetCode,
+		}, nil
+	}
+}
+
+func decodeGetOTPRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
+	var req OTPreq
 
 	if e := json.NewDecoder(r.Body).Decode(&req); e != nil {
 		return nil, e
