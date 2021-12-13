@@ -4,7 +4,7 @@ import (
 	"math/rand"
 )
 
-func GenerateOTP() string{
+func GenerateOTP() string {
 	var otp string
 	numberSet := []rune("0123456789")
 	otpLength := make([]rune, 6)
@@ -13,6 +13,6 @@ func GenerateOTP() string{
 		otpLength[i] = numberSet[rand.Intn(len(numberSet))]
 	}
 	otp = string(otpLength)
-	
-	return "this is your otp: "+otp
+
+	return "this is your otp: " + otp
 }

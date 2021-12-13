@@ -20,6 +20,7 @@ type (
 		Login(ctx context.Context, usernmae string, password string) (*datastruct.UserInformation, map[string]string, error)
 		UsernameAvailability(ctx context.Context, identity string) (string, error)
 		EmailAvailability(ctx context.Context, identity string) (string, error)
+		RefreshToken(ctx context.Context, identity, customKey string) (string, error)
 		GetOTP(ctx context.Context, usernmae string) (*datastruct.UserInformation, error)
 	}
 
@@ -119,6 +120,30 @@ func (s *service) EmailAvailability(ctx context.Context, email string) (string, 
 	return util.MsgEmailAvail, nil
 }
 
+func (s *service) RefreshToken(ctx context.Context, identity, customKey string) (string, error) {
+	user, err := s.repository.GetUserByUsername(ctx, identity)
+	if err != nil {
+		return "", err
+	}
+
+	getCustomKey := jwt.CreateCustomKey(user.TokenHash, fmt.Sprint(user.UserID))
+
+	actualCustomKey := jwt.GenerateCustomKey(getCustomKey)
+
+	level.Debug(s.logger).Log("actual", actualCustomKey, "get", customKey)
+
+	if customKey != actualCustomKey {
+		return "", errors.New(util.ErrUnauthorized)
+	}
+
+	token, err := jwt.GenerateAccessToken(fmt.Sprint(user.UserID), int64(s.configs.JwtExpiration), s.configs.JwtSecret)
+	if err != nil {
+		return "", errors.New(util.ErrGenerateToken)
+	}
+
+	return token, nil
+}
+
 //Get OTP
 func (s *service) GetOTP(ctx context.Context, identity string) (*datastruct.UserInformation, error) {
 
@@ -135,7 +160,7 @@ func (s *service) GetOTP(ctx context.Context, identity string) (*datastruct.User
 			level.Error(s.logger).Log("err", err)
 			return nil, err
 		}
-	} 
+	}
 
 	if !user.Email_verified {
 		return nil, errors.New(util.ErrEmailUnverified)

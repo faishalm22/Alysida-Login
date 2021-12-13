@@ -12,7 +12,6 @@ import (
 	"syscall"
 
 	"shadelx-be-usermgmt/service"
-	//"shadelx-be-usermgmt/service/pkg/mailer"
 	"shadelx-be-usermgmt/service/repository"
 	"shadelx-be-usermgmt/util"
 

@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"shadelx-be-usermgmt/util"
@@ -17,6 +18,7 @@ type (
 		Login                endpoint.Endpoint
 		UsernameAvailability endpoint.Endpoint
 		EmailAvailability    endpoint.Endpoint
+		RefreshToken         endpoint.Endpoint
 		GetOTP               endpoint.Endpoint
 	}
 
@@ -39,6 +41,12 @@ type (
 	// EmailAvailabilityReq data format
 	EmailAvailabilityReq struct {
 		Email string `json:"email"`
+	}
+
+	// RefresTokenReq data format
+	RefreshTokenReq struct {
+		Username  string `json:"username"`
+		CustomKey string `json:"custom_key,omitempty"`
 	}
 
 	// Response format
@@ -108,6 +116,46 @@ func decodeLoginRequest(_ context.Context, r *http.Request) (request interface{}
 	if e := json.NewDecoder(r.Body).Decode(&req); e != nil {
 		return nil, e
 	}
+	return req, nil
+}
+
+func makeRefreshTokenEndopint(svc Service) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req := request.(RefreshTokenReq)
+		res, err := svc.RefreshToken(ctx, req.Username, req.CustomKey)
+		if res == "" && err != nil {
+			return Response{
+				Status:  false,
+				Message: err.Error(),
+			}, nil
+		}
+
+		if res != "" && err == nil {
+			return Response{
+				Status: true,
+				Data: tokenRes{
+					TokenAccess: res,
+				},
+			}, nil
+
+		}
+		return Response{Status: false, Message: util.ErrInternalServerError}, nil
+	}
+}
+
+func decodeRefreshTokenRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
+	var req RefreshTokenReq
+	if e := json.NewDecoder(r.Body).Decode(&req); e != nil {
+		return nil, e
+	}
+
+	customKey, ok := r.Context().Value(UserKey{}).(string)
+	if !ok {
+		return nil, errors.New("Can't get context")
+	}
+
+	req.CustomKey = customKey
+
 	return req, nil
 }
 

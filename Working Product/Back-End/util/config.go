@@ -20,6 +20,7 @@ type Configurations struct {
 	DBConn                  string
 	JwtSecret               string
 	JwtExpiration           int // in minutes
+	SendGridApiKey          string
 	PassResetCodeExpiration int // in minutes
 	PassResetTemplatePath   string
 	PassResetTemplateID     string
@@ -68,6 +69,7 @@ func NewConfigurations(logger log.Logger) *Configurations {
 		DBConn:                  conn,
 		JwtSecret:               viper.GetString("JWT_SECRET"),
 		JwtExpiration:           viper.GetInt("JWT_EXPIRATION"),
+		SendGridApiKey:          viper.GetString("SENDGRID_API_KEY"),
 		PassResetCodeExpiration: viper.GetInt("PASSWORD_RESET_CODE_EXPIRATION"),
 		PassResetTemplatePath:   viper.GetString("PASSWORD_RESET_TEMPLATE_PATH"),
 		MailVerifCodeExpiration: viper.GetInt("MAIL_VERIFICATION_CODE_EXPIRATION"),
