@@ -30,7 +30,7 @@ const WelcomeAuth = ({navigation}) => {
             backgroundcolor="#0c8eff"
             backgroundcoloronpress="#0c8eff"
             textcolor="white"
-            onPress={() => handleGoTo('SignIn')}
+            onPress={() => handleGoTo('Home')}
           />
         </View>
         <Gap height={10} />
