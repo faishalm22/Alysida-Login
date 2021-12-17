@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
@@ -21,7 +22,8 @@ type (
 		UsernameAvailability(ctx context.Context, identity string) (string, error)
 		EmailAvailability(ctx context.Context, identity string) (string, error)
 		RefreshToken(ctx context.Context, identity, customKey string) (string, error)
-		GetOTP(ctx context.Context, usernmae string) (*datastruct.UserInformation, error)
+		GetOTP(ctx context.Context, usernmae string) (bool, error)
+		VerifyOTP(ctx context.Context, identity, code string) (bool, string, error)
 	}
 
 	service struct {
@@ -40,6 +42,7 @@ func NewService(repo datastruct.DBRepository, configs *util.Configurations, logg
 	}
 }
 
+//Login
 func (s *service) Login(ctx context.Context, identity string, password string) (*datastruct.UserInformation, map[string]string, error) {
 
 	var err error
@@ -70,6 +73,7 @@ func (s *service) Login(ctx context.Context, identity string, password string) (
 		return nil, nil, errors.New(util.ErrEmailUnverified)
 	}
 
+	//membandingkan password yg diinputkan dengan yg ada di database
 	if err := util.PasswordCompare(user.Password, password); err != nil {
 		fmt.Println(err)
 		return nil, nil, errors.New(util.ErrInvalidPassword)
@@ -96,6 +100,7 @@ func (s *service) Login(ctx context.Context, identity string, password string) (
 	return user, token, nil
 }
 
+//cek username
 func (s *service) UsernameAvailability(ctx context.Context, username string) (string, error) {
 	isExist, err := s.repository.UsernameIsExist(ctx, username)
 	if err != nil {
@@ -108,6 +113,7 @@ func (s *service) UsernameAvailability(ctx context.Context, username string) (st
 	return util.MsgUserAvail, nil
 }
 
+//cek email
 func (s *service) EmailAvailability(ctx context.Context, email string) (string, error) {
 	isExist, err := s.repository.EmailIsExist(ctx, email)
 	if err != nil {
@@ -120,6 +126,7 @@ func (s *service) EmailAvailability(ctx context.Context, email string) (string, 
 	return util.MsgEmailAvail, nil
 }
 
+//refresh token
 func (s *service) RefreshToken(ctx context.Context, identity, customKey string) (string, error) {
 	user, err := s.repository.GetUserByUsername(ctx, identity)
 	if err != nil {
@@ -145,7 +152,7 @@ func (s *service) RefreshToken(ctx context.Context, identity, customKey string) 
 }
 
 //Get OTP
-func (s *service) GetOTP(ctx context.Context, identity string) (*datastruct.UserInformation, error) {
+func (s *service) GetOTP(ctx context.Context, identity string) (bool, error) {
 
 	var err error
 	var user *datastruct.UserInformation
@@ -153,18 +160,102 @@ func (s *service) GetOTP(ctx context.Context, identity string) (*datastruct.User
 	if strings.Contains(identity, "@") {
 		user, err = s.repository.GetUserByEmail(ctx, identity)
 		if err != nil && err == sql.ErrNoRows {
-			return nil, errors.New(util.ErrInvalidUsernameEmail)
+			return false, errors.New(util.ErrInvalidUsernameEmail)
 		}
 
 		if err != nil {
 			level.Error(s.logger).Log("err", err)
-			return nil, err
+			return false, err
+		}
+	} else {
+		user, err = s.repository.GetUserByUsername(ctx, identity)
+		if err != nil && err == sql.ErrNoRows {
+			return false, errors.New(util.ErrInvalidUsernameEmail)
+		}
+		if err != nil {
+			level.Error(s.logger).Log("err", err)
+			return false, err
 		}
 	}
 
-	if !user.Email_verified {
-		return nil, errors.New(util.ErrEmailUnverified)
+	code, err := util.GenerateRandom4Digits()
+	if err != nil {
+		return false, errors.New(util.ErrGenerateOTP)
 	}
 
-	return user, nil
+	verificationData := &datastruct.VerificationData{
+		Email:     user.Email,
+		Code:      fmt.Sprint(code),
+		ExpiresAt: time.Now().Add(time.Minute * time.Duration(30)),
+	}
+
+	sendEmail(user.Email, code)
+
+	if err = s.repository.CreateOTP(ctx, verificationData); err != nil {
+		level.Error(s.logger).Log("err", err.Error())
+		return false, errors.New(util.ErrDBPostgre)
+	}
+	return true, nil
+}
+
+//Verifikasi OTP
+func (s *service) VerifyOTP(ctx context.Context, identity string, code string) (bool, string, error) {
+	var user *datastruct.UserInformation
+	var actualVerificationData *datastruct.VerificationData
+	var verificationData datastruct.VerificationData
+
+	var err error
+	if strings.Contains(identity, "@") {
+		user, err = s.repository.GetUserByEmail(ctx, identity)
+		if err != nil && err == sql.ErrNoRows {
+			return false, "", errors.New(util.ErrInvalidUsernameEmail)
+		}
+
+		if err != nil {
+			level.Error(s.logger).Log("err", err)
+			return false, "", err
+		}
+	} else {
+		user, err = s.repository.GetUserByUsername(ctx, identity)
+		if err != nil && err == sql.ErrNoRows {
+			return false, "", errors.New(util.ErrInvalidUsernameEmail)
+		}
+		if err != nil {
+			level.Error(s.logger).Log("err", err)
+			return false, "", err
+		}
+	}
+
+	verificationData.Code = code
+	verificationData.Email = user.Email
+	//verificationData.Type = datastruct.VerificationDataType(2)
+	actualVerificationData, err = s.repository.GetVerificationData(ctx, user.Email)
+	if err != nil {
+		level.Error(s.logger).Log("err", err)
+		return false, "", err
+	}
+
+	_, err = verifyCode(actualVerificationData, verificationData)
+	if err != nil {
+		level.Error(s.logger).Log("err", err)
+		return false, "", err
+	}
+
+	return true, code, nil
+}
+
+//cek kode otp yg diinputkan dengan yg ada di database dan
+//cek kadaluarsa kode otp
+func verifyCode(actualVerificationData *datastruct.VerificationData, verificationData datastruct.VerificationData) (bool, error) {
+
+	// check for expiration
+	if actualVerificationData.ExpiresAt.Before(time.Now()) {
+		return false, errors.New(util.ErrPasswordResetCodeExpired)
+	}
+
+	if actualVerificationData.Code != verificationData.Code {
+		return false, errors.New(util.ErrPasswordResetCodeInvalid)
+	}
+
+	return true, nil
 }

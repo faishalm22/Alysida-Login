@@ -23,46 +23,14 @@ func NewRepo(db *sql.DB, logger log.Logger) datastruct.DBRepository {
 }
 
 const (
-	queryInsertUser        = "INSERT INTO tbl_mstr_user(user_id, username, email, name, password, phonenumber, created_date, updated_date, updated_by, email_verified, image_file, identity_type, identity_no, address_ktp, domisili, token_hash) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, &16);"
+	//queryInsertUser        = "INSERT INTO tbl_mstr_user(user_id, username, email, name, password, phonenumber, created_date, updated_date, updated_by, email_verified, image_file, identity_type, identity_no, address_ktp, domisili, token_hash) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, &16);"
 	queryGetUserByEmail    = "SELECT * FROM tbl_mstr_user WHERE email=$1 LIMIT 1;"
 	queryGetUserByUsername = "SELECT * FROM tbl_mstr_user WHERE username=$1 LIMIT 1;"
 	queryEmailIsExists     = "SELECT EXISTS(SELECT 1 FROM tbl_mstr_user WHERE email=$1);"
 	queryUsernameIsExists  = "SELECT EXISTS(SELECT 1 FROM tbl_mstr_user WHERE username=$1);"
+	queryStoreOTP  = "INSERT INTO tbl_trx_verification_email(email, code, expires_at) VALUES($1, $2, $3)"
+	queryGetVerificationData    = "SELECT email, code, expires_at FROM tbl_trx_verification_email WHERE email = $1 ORDER BY expires_at LIMIT 1"
 )
-
-// CreateUser inserts the given user into the database
-func (repo *repo) CreateUser(ctx context.Context, user *datastruct.UserInformation) error {
-
-	level.Debug(repo.logger).Log("msg", "start CreateUser", "user", user.Email)
-
-	_, err := repo.db.ExecContext(
-		ctx,
-		queryInsertUser,
-		user.UserID,
-		user.Username,
-		user.Email,
-		user.Name,
-		user.Phonenumber,
-		user.Password,
-		user.CreatedDate,
-		user.UpdatedDate,
-		user.Email_verified,
-		user.Image_file,
-		user.Identity_type,
-		user.Identity_no,
-		user.Address_ktp,
-		user.Domisili,
-		user.TokenHash,
-	)
-	if err != nil {
-		level.Error(repo.logger).Log("err", err.Error())
-		return err
-	}
-
-	level.Debug(repo.logger).Log("msg", "finish CreateUser")
-
-	return nil
-}
 
 // GetUserByEmail retrieves the user object having the given email, else returns error
 func (repo *repo) GetUserByEmail(ctx context.Context, email string) (*datastruct.UserInformation, error) {
@@ -128,6 +96,50 @@ func (repo *repo) GetUserByUsername(ctx context.Context, username string) (*data
 	level.Debug(repo.logger).Log("msg", "finish GetUserByUsername")
 
 	return &user, nil
+}
+
+// CreateOTP inserts the OTP code into the database
+func (repo *repo) CreateOTP(ctx context.Context, data *datastruct.VerificationData) error {
+
+	level.Debug(repo.logger).Log("msg", "start run CreateVerificationData")
+
+	_, err := repo.db.ExecContext(
+		ctx,
+		queryStoreOTP,
+		data.Email,
+		data.Code,
+		data.ExpiresAt,
+	)
+	if err != nil {
+		level.Error(repo.logger).Log("err", err.Error())
+		return err
+	}
+
+	level.Debug(repo.logger).Log("msg", "finish CreateVerificationData")
+
+	return nil
+}
+
+// GetVerificationData retrieves the stored verification code.
+func (repo *repo) GetVerificationData(ctx context.Context, email string) (*datastruct.VerificationData, error) {
+
+	level.Debug(repo.logger).Log("msg", "start run GetVerificationData")
+
+	var verificationData datastruct.VerificationData
+	err := repo.db.QueryRowContext(ctx, queryGetVerificationData, email).Scan(
+		&verificationData.Email,
+		&verificationData.Code,
+		&verificationData.ExpiresAt,
+		//&verificationData.Type,
+	)
+	if err != nil {
+		level.Error(repo.logger).Log("err", err.Error())
+		return nil, err
+	}
+
+	level.Debug(repo.logger).Log("msg", "finish GetVerificationData")
+
+	return &verificationData, nil
 }
 
 // EmailIsExist use to check if email is exist

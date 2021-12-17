@@ -20,6 +20,7 @@ type (
 		EmailAvailability    endpoint.Endpoint
 		RefreshToken         endpoint.Endpoint
 		GetOTP               endpoint.Endpoint
+		VerifyOTP			 endpoint.Endpoint
 	}
 
 	// LoginReq data format
@@ -30,7 +31,13 @@ type (
 
 	// OTPreq data format
 	OTPreq struct {
-		Identity string
+		Identity string `json:"identity"`
+	}
+
+	// VerifyOTPreq data format
+	VerifyOTPreq struct {
+		Identity string `json:"identity"`
+		Code     string `json:"code"`
 	}
 
 	// UsernameAvailabilityReq data format
@@ -76,9 +83,11 @@ func MakeAuthEndpoints(svc Service) Endpoints {
 		UsernameAvailability: makeUsernameAvailabilityRequest(svc),
 		EmailAvailability:    makeEmailAvailabilityRequest(svc),
 		GetOTP:               makeGetOTPEndpoint(svc),
+		VerifyOTP:			  makeVerifyOTPEndpoint(svc),
 	}
 }
 
+//Endpoint untuk login
 func makeLoginEndopint(svc Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(LoginReq)
@@ -119,6 +128,7 @@ func decodeLoginRequest(_ context.Context, r *http.Request) (request interface{}
 	return req, nil
 }
 
+//Endpoint refresh token
 func makeRefreshTokenEndopint(svc Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(RefreshTokenReq)
@@ -159,21 +169,17 @@ func decodeRefreshTokenRequest(_ context.Context, r *http.Request) (request inte
 	return req, nil
 }
 
-//untuk forgot password
+//Endpoint request otp
 func makeGetOTPEndpoint(svc Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(OTPreq)
-		user, err := svc.GetOTP(ctx, req.Identity)
+		ok, err := svc.GetOTP(ctx, req.Identity)
 		if err != nil {
 			return Response{Status: false, Message: err.Error()}, nil
+		} else if ok && err == nil {
+			return Response{Status: true, Message: util.MsgGeneratedPasswordResetCode}, nil
 		}
-
-		sendEmail(user.Email)
-
-		return Response{
-			Status:  true,
-			Message: util.MsgGeneratedPasswordResetCode,
-		}, nil
+		return Response{Status: false, Message: util.ErrInternalServerError}, nil
 	}
 }
 
@@ -186,6 +192,31 @@ func decodeGetOTPRequest(_ context.Context, r *http.Request) (request interface{
 	return req, nil
 }
 
+//Endpoint verify otp
+func makeVerifyOTPEndpoint(svc Service) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req := request.(VerifyOTPreq)
+		ok, otpCode, err := svc.VerifyOTP(ctx, req.Identity, req.Code)
+		if err != nil {
+			return Response{Status: false, Message: err.Error()}, nil
+		} else if ok && err == nil {
+			data := make(map[string]interface{})
+			data["code"] = otpCode
+			return Response{Status: true, Message: util.MsgVerifiedPasswordResetCode, Data: data}, nil
+		}
+		return Response{Status: false, Message: util.ErrInternalServerError}, nil
+	}
+}
+
+func decodeVerifyPasswordReset(_ context.Context, r *http.Request) (request interface{}, err error) {
+	var req VerifyOTPreq
+	if e := json.NewDecoder(r.Body).Decode(&req); e != nil {
+		return nil, e
+	}
+	return req, nil
+}
+
+//Endpoint cek username
 func makeUsernameAvailabilityRequest(svc Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(UsernameAvailabilityReq)
@@ -208,6 +239,7 @@ func decodeUsernameAvailabilityRequest(_ context.Context, r *http.Request) (requ
 	return req, nil
 }
 
+//Endpoint cek email
 func makeEmailAvailabilityRequest(svc Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(EmailAvailabilityReq)

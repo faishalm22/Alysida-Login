@@ -18,18 +18,28 @@ func NewHTTPServer(ctx context.Context, endpoints Endpoints) http.Handler {
 	postR := apiR.Methods(http.MethodPost).Subrouter()
 	// postR.Use(MiddlewareValidateUser)
 
+	//untuk login
 	postR.Path("/login").Handler(httptransport.NewServer(
 		endpoints.Login,
 		decodeLoginRequest,
 		encodeResponse,
 	))
 
-	//untuk dapat otp////////////
+	//untuk dapat otp
 	postR.Path("/get-password-reset-code").Handler(httptransport.NewServer(
 		endpoints.GetOTP,
 		decodeGetOTPRequest,
 		encodeResponse,
-	))/////////
+	))
+
+	mailR := apiR.PathPrefix("/verify").Methods(http.MethodPost).Subrouter()
+
+	//untuk verifikasi otp
+	mailR.Path("/password-reset").Handler(httptransport.NewServer(
+		endpoints.VerifyOTP,
+		decodeVerifyPasswordReset,
+		encodeResponse,
+	))
 
 	getR := apiR.Methods(http.MethodGet).Subrouter()
 
