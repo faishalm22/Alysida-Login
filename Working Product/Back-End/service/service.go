@@ -189,7 +189,7 @@ func (s *service) GetOTP(ctx context.Context, identity string) (bool, error) {
 		ExpiresAt: time.Now().Add(time.Minute * time.Duration(30)),
 	}
 
-	sendEmail(user.Email, code)
+	sendEmail(user.Email, user.Username, code)
 
 	if err = s.repository.CreateOTP(ctx, verificationData); err != nil {
 		level.Error(s.logger).Log("err", err.Error())
