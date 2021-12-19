@@ -23,13 +23,14 @@ func NewRepo(db *sql.DB, logger log.Logger) datastruct.DBRepository {
 }
 
 const (
-	//queryInsertUser        = "INSERT INTO tbl_mstr_user(user_id, username, email, name, password, phonenumber, created_date, updated_date, updated_by, email_verified, image_file, identity_type, identity_no, address_ktp, domisili, token_hash) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, &16);"
-	queryGetUserByEmail    = "SELECT * FROM tbl_mstr_user WHERE email=$1 LIMIT 1;"
-	queryGetUserByUsername = "SELECT * FROM tbl_mstr_user WHERE username=$1 LIMIT 1;"
-	queryEmailIsExists     = "SELECT EXISTS(SELECT 1 FROM tbl_mstr_user WHERE email=$1);"
-	queryUsernameIsExists  = "SELECT EXISTS(SELECT 1 FROM tbl_mstr_user WHERE username=$1);"
-	queryStoreOTP  = "INSERT INTO tbl_trx_verification_email(email, code, expires_at) VALUES($1, $2, $3)"
+	queryGetUserByEmail         = "SELECT * FROM tbl_mstr_user WHERE email=$1 LIMIT 1;"
+	queryGetUserByUsername      = "SELECT * FROM tbl_mstr_user WHERE username=$1 LIMIT 1;"
+	queryEmailIsExists          = "SELECT EXISTS(SELECT 1 FROM tbl_mstr_user WHERE email=$1);"
+	queryUsernameIsExists       = "SELECT EXISTS(SELECT 1 FROM tbl_mstr_user WHERE username=$1);"
+	queryStoreOTP               = "INSERT INTO tbl_trx_verification_email(email, code, expires_at) VALUES($1, $2, $3)"
 	queryGetVerificationData    = "SELECT email, code, expires_at FROM tbl_trx_verification_email WHERE email = $1 ORDER BY expires_at LIMIT 1"
+	queryUpdatePassword         = "UPDATE tbl_mstr_user SET password = $1, token_hash = $2 WHERE email = $3"
+	queryDeleteVerificationData = "DELETE FROM tbl_trx_verification_email WHERE email = $1 AND type = $2"
 )
 
 // GetUserByEmail retrieves the user object having the given email, else returns error
@@ -171,4 +172,40 @@ func (repo *repo) UsernameIsExist(ctx context.Context, username string) (bool, e
 	level.Debug(repo.logger).Log("msg", "finish EmailIsExist")
 
 	return exists, nil
+}
+
+// UpdateUserPassword updates the user password
+func (repo *repo) UpdateUserPassword(ctx context.Context, email string, password string, tokenHash string) error {
+
+	level.Debug(repo.logger).Log("msg", "start run UpdateUserPassword")
+
+	_, err := repo.db.ExecContext(ctx, queryUpdatePassword, password, tokenHash, email)
+	if err != nil {
+		level.Error(repo.logger).Log("err", err.Error())
+		return err
+	}
+
+	level.Debug(repo.logger).Log("msg", "finish UpdateUserPassword")
+
+	return nil
+}
+
+// DeleteVerificationData deletes a used verification data
+func (repo *repo) DeleteVerificationData(ctx context.Context, verificationData *datastruct.VerificationData) error {
+
+	level.Debug(repo.logger).Log("msg", "start run DeleteVerificationData")
+
+	_, err := repo.db.ExecContext(
+		ctx,
+		queryDeleteVerificationData,
+		verificationData.Email,
+	)
+	if err != nil {
+		level.Error(repo.logger).Log("err", err.Error())
+		return err
+	}
+
+	level.Debug(repo.logger).Log("msg", "finish DeleteVerificationData")
+
+	return nil
 }

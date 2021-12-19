@@ -20,7 +20,8 @@ type (
 		EmailAvailability    endpoint.Endpoint
 		RefreshToken         endpoint.Endpoint
 		GetOTP               endpoint.Endpoint
-		VerifyOTP			 endpoint.Endpoint
+		VerifyOTP            endpoint.Endpoint
+		ResetPassword        endpoint.Endpoint
 	}
 
 	// LoginReq data format
@@ -56,6 +57,14 @@ type (
 		CustomKey string `json:"custom_key,omitempty"`
 	}
 
+	// ResetPasswordReq data format
+	ResetPasswordReq struct {
+		Identity   string `json:"identity"`
+		Password   string `json:"password"`
+		PasswordRe string `json:"password_re"`
+		Code       string `json:"code"`
+	}
+
 	// Response format
 	Response struct {
 		Status  bool        `json:"status"`
@@ -83,7 +92,7 @@ func MakeAuthEndpoints(svc Service) Endpoints {
 		UsernameAvailability: makeUsernameAvailabilityRequest(svc),
 		EmailAvailability:    makeEmailAvailabilityRequest(svc),
 		GetOTP:               makeGetOTPEndpoint(svc),
-		VerifyOTP:			  makeVerifyOTPEndpoint(svc),
+		VerifyOTP:            makeVerifyOTPEndpoint(svc),
 	}
 }
 
@@ -270,4 +279,24 @@ func encodeResponse(ctx context.Context, w http.ResponseWriter, response interfa
 	}
 	w.WriteHeader(sc)
 	return json.NewEncoder(w).Encode(&res)
+}
+
+func makeResetPasswordEndpoint(svc Service) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req := request.(ResetPasswordReq)
+		err := svc.ResetPassword(ctx, req.Identity, req.Password, req.PasswordRe, req.Code)
+		if err != nil {
+			return Response{Status: false, Message: err.Error()}, nil
+		}
+		return Response{Status: true, Message: util.MsgPasswordReset}, nil
+	}
+}
+
+func decodeResetPassword(_ context.Context, r *http.Request) (request interface{}, err error) {
+	var req ResetPasswordReq
+
+	if e := json.NewDecoder(r.Body).Decode(&req); e != nil {
+		return nil, e
+	}
+	return req, nil
 }

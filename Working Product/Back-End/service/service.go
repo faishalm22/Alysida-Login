@@ -24,6 +24,7 @@ type (
 		RefreshToken(ctx context.Context, identity, customKey string) (string, error)
 		GetOTP(ctx context.Context, usernmae string) (bool, error)
 		VerifyOTP(ctx context.Context, identity, code string) (bool, string, error)
+		ResetPassword(ctx context.Context, identity, code, password, passwordRe string) error
 	}
 
 	service struct {
@@ -258,4 +259,66 @@ func verifyCode(actualVerificationData *datastruct.VerificationData, verificatio
 	}
 
 	return true, nil
+}
+
+func (s *service) ResetPassword(ctx context.Context, identity, password, passwordRe, code string) error {
+
+	var user *datastruct.UserInformation
+	var actualVerificationData *datastruct.VerificationData
+	var verificationData datastruct.VerificationData
+	var err error
+
+	if strings.Contains(identity, "@") {
+		user, err = s.repository.GetUserByEmail(ctx, identity)
+		if err != nil {
+			level.Error(s.logger).Log("err", err.Error())
+			return err
+		}
+	} else {
+		user, err = s.repository.GetUserByUsername(ctx, identity)
+		if err != nil {
+			level.Error(s.logger).Log("err", err.Error())
+			return err
+		}
+	}
+
+	verificationData.Code = code
+	verificationData.Email = user.Email
+	actualVerificationData, err = s.repository.GetVerificationData(ctx, user.Email)
+	if err != nil {
+		level.Error(s.logger).Log("err", err.Error())
+		return err
+	}
+
+	// fmt.Println(actualVerificationData.Code)
+	// fmt.Println(verificationData.Code)
+	_, err = verifyCode(actualVerificationData, verificationData)
+	if err != nil {
+		level.Error(s.logger).Log("err", err.Error())
+		return err
+	}
+
+	if password != passwordRe {
+		level.Error(s.logger).Log("err", util.ErrPassordNotMatched)
+		return errors.New(util.ErrPassordNotMatched)
+	}
+
+	hashedPass, err := util.PasswordHashing(password)
+	if err != nil {
+		level.Error(s.logger).Log("err", err.Error())
+		return err
+	}
+
+	tokenHash := util.GenerateRandomString(15)
+
+	if err := s.repository.UpdateUserPassword(ctx, user.Email, hashedPass, tokenHash); err != nil {
+		level.Error(s.logger).Log("err", err.Error())
+		return errors.New(util.ErrDBPostgre)
+	}
+
+	if err = s.repository.DeleteVerificationData(ctx, actualVerificationData); err != nil {
+		level.Error(s.logger).Log("err", err.Error())
+		return errors.New(util.ErrDBPostgre)
+	}
+	return nil
 }

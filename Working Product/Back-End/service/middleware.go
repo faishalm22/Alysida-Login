@@ -2,6 +2,7 @@ package service
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -10,6 +11,7 @@ import (
 	"regexp"
 	"runtime/debug"
 	"shadelx-be-usermgmt/datastruct"
+	"shadelx-be-usermgmt/service/pkg/jwt"
 
 	"strings"
 	"time"
@@ -142,7 +144,7 @@ func MiddlewareValidateUser(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 	})
 }
-/*
+
 func MiddlewareValidateRefreshToken(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
@@ -177,7 +179,7 @@ func MiddlewareValidateRefreshToken(next http.Handler) http.Handler {
 
 		next.ServeHTTP(w, r)
 	})
-}*/
+}
 
 func extractToken(r *http.Request) (string, error) {
 	authHeader := r.Header.Get("Authorization")
