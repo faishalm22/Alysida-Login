@@ -18,7 +18,7 @@ const (
 	ErrInvalidToken             = "Invalid token: authentication failed"
 	ErrEmailSend                = "Cannot send email verification"
 	ErrInvalidPassword          = "Invalid password"
-	ErrInvalidUsernameEmail     = "Invalid username or email"
+	ErrInvalidUsernameEmail     = "Invalid username or password"
 	ErrPasswordResetCodeExpired = "Confirmation code has expired. Please try generating a new code"
 	ErrPasswordResetCodeInvalid = "Verification code provided is invalid"
 	ErrPassordNotMatched        = "Password and password re-enter did not match"

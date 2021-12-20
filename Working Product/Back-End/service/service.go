@@ -77,7 +77,7 @@ func (s *service) Login(ctx context.Context, identity string, password string) (
 	//membandingkan password yg diinputkan dengan yg ada di database
 	if err := util.PasswordCompare(user.Password, password); err != nil {
 		fmt.Println(err)
-		return nil, nil, errors.New(util.ErrInvalidPassword)
+		return nil, nil, errors.New(util.ErrInvalidUsernameEmail)
 	}
 
 	accessToken, err := jwt.GenerateAccessToken(fmt.Sprint(user.UserID), int64(s.configs.JwtExpiration), s.configs.JwtSecret)
