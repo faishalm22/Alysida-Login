@@ -52,9 +52,9 @@ const CheckEmailForgot = ({navigation}) => {
       <View style={styles.container}>
         <View style={styles.main}>
           <View style={styles.title}>
-            <Text style={styles.titleText}>Check your email</Text>
+            <Text style={styles.titleText}>Verification Account</Text>
             <View style={styles.subtitleContainer}>
-              <Text style={styles.subtitle}>We have sent a OTP Code to</Text>
+              <Text style={styles.subtitle}>We have sent verify account to your email. please check your email account to get OTP Code</Text>
               <Text style={styles.subtitleEmail}>{forgotReducer.identity}</Text>
             </View>
           </View>
@@ -62,7 +62,7 @@ const CheckEmailForgot = ({navigation}) => {
           <SmoothPinCodeInput
             keyboardType="numeric"
             containerStyle={styles.verifyContainer}
-            codeLength={6}
+            codeLength={4}
             cellStyleFocused={styles.cellFocused}
             cellStyle={styles.numberInput}
             value={code}
@@ -70,8 +70,8 @@ const CheckEmailForgot = ({navigation}) => {
           />
           <Gap height={20} />
           <Text style={styles.subtitle}>
-            Did not receive the email? Check your spam filter, or{' '}
-            <Text style={styles.subtitleEmail}> send another request</Text>
+          Did not receive the email? 
+            <Text style={styles.subtitleEmail}> Click here to resend OTP code</Text>
           </Text>
           <Gap height={40} />
           <Gap height={40} />
