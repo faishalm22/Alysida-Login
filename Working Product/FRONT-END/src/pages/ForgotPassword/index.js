@@ -53,8 +53,8 @@ const ForgotPassword = ({navigation}) => {
           </View>
           <Gap height={30} />
           <TextInputIcon
-            label="Username or Email"
-            placeholder="Email or phone number"
+            label="Email"
+            placeholder="Email"
             autoCapitalize="none"
             sourceImageLeft={UserIcon}
             sourceImageLeftActive={UserIconActive}
@@ -63,7 +63,7 @@ const ForgotPassword = ({navigation}) => {
           <Gap height={30} />
           <Buttons
             text="Next"
-            backgroundcolor="#757575"
+            backgroundcolor="#0c8eff"
             textcolor="white"
             onPress={onSubmit}
           />
@@ -71,7 +71,7 @@ const ForgotPassword = ({navigation}) => {
           <View
             style={{
               height: 1,
-              backgroundColor: '#757575',
+              backgroundColor: '#0c8eff',
               position: 'relative',
             }}>
             <Text
@@ -136,6 +136,7 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: 26,
     fontFamily: 'SarabunExtraBold',
+    color: '#495057',
     textAlign: 'center',
   },
   subtitleText: {

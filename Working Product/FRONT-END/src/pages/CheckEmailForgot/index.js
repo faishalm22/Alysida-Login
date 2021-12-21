@@ -124,6 +124,7 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: 25,
     fontFamily: 'SarabunExtraBold',
+    color: '#495057',
     textAlign: 'center',
   },
   title: {

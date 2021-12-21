@@ -71,7 +71,7 @@ const SignIn = ({navigation}) => {
           <Gap height={20} />
           <Buttons
             text="Sign In"
-            backgroundcolor="#757575"
+            backgroundcolor="#0c8eff"
             textcolor="white"
             onPress={onSubmit}
           />
@@ -96,7 +96,7 @@ const SignIn = ({navigation}) => {
           <View
             style={{
               height: 1,
-              backgroundColor: '#757575',
+              backgroundColor: '#0c8eff',
               position: 'relative',
             }}>
             <Text
@@ -161,6 +161,7 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: 26,
     fontFamily: 'SarabunExtraBold',
+    color: '#495057',
     textAlign: 'center',
   },
   subtitleText: {

@@ -1,9 +1,11 @@
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {View,StyleSheet, Image} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import { BackIcon } from '../assets';
+import { BackIcon, } from '../assets';
+import { Buttons, Gap } from '../components/atoms';
+import {signInAction} from '../redux/action';
+import {LogoGroup} from '../assets';
 import {
   SplashScreen,
   WelcomeAuth,
@@ -20,6 +22,9 @@ import {
 import {BottomNavigator} from '../components';
 
 const Stack = createStackNavigator();
+const onSubmit = () => {
+  dispatch(signInAction(form, navigation));
+};
 //const Tab = createBottomTabNavigator();
 
 const MainApp = ({navigation}) => {
@@ -27,11 +32,23 @@ const MainApp = ({navigation}) => {
     navigation.navigate(screen);
   };
    return (
-       <View style={styles.header}>
-                <TouchableOpacity onPress={() => handleGoTo('WelcomeAuth')}>
+       <View style={styles.wrapper}>
+              <TouchableOpacity onPress={() => handleGoTo('WelcomeAuth')}>
             <Image source={BackIcon} style={styles.iconBack} />
           </TouchableOpacity>
-        </View>     
+            <View style={styles.inputcontainer}>
+              <Image style={styles.container} source={LogoGroup}/>
+              <Gap height={50} />
+                <Buttons
+                  text="Log Out"
+                  backgroundcolor="#457b9d"
+                  textcolor="white"
+                  onPress={onSubmit}
+                />
+              </View>
+              
+        </View> 
+            
   //   // <Tab.Navigator
   //   //   sceneContainerStyle={{height: 1000}}
   //   //   tabBar={(props) => <BottomNavigator {...props} />}
@@ -62,32 +79,6 @@ const MainApp = ({navigation}) => {
 //   );
 // };
 
-// const SafetyStackScreen = () => {
-//   return (
-//     <Stack.Navigator initialRouteName="SafetyTips">
-//       <Stack.Screen
-//         name="SafetyTips"
-//         component={SafetyTips}
-//         options={{headerShown: false, animationEnabled: false}}
-//       />
-//       <Stack.Screen
-//         name="SafetyVideo"
-//         component={SafetyVideo}
-//         options={{headerShown: false, animationEnabled: false}}
-//       />
-//       <Stack.Screen
-//         name="SafetySertifikasi"
-//         component={SafetySertifikasi}
-//         options={{headerShown: false, animationEnabled: false}}
-//       />
-//       <Stack.Screen
-//         name="TipsPDF"
-//         component={TipsPDF}
-//         options={{headerShown: false}}
-//       />
-//     </Stack.Navigator>
-//   );
-// };
 
 const Router = () => {
   return (
@@ -112,27 +103,11 @@ const Router = () => {
         component={Home}
         options={{headerShown: false}}
       />
-      
-      {/* <Stack.Screen
-        name="SignUp"
-        component={SignUp}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="SignUpForm"
-        component={SignUpForm}
-        options={{headerShown: false}}
-      /> */}
       <Stack.Screen
         name="CheckEmailToken"
         component={CheckEmailToken}
         options={{headerShown: false}}
       />
-      {/* <Stack.Screen
-        name="SuccessSignUp"
-        component={SuccessSignUp}
-        options={{headerShown: false}}
-      /> */}
       <Stack.Screen
         name="ForgotPassword"
         component={ForgotPassword}
@@ -163,14 +138,30 @@ const Router = () => {
 };
 
  const styles = StyleSheet.create({
-   header: {
-     height: 20,
-     justifyContent: 'center',
-   },
+  wrapper: {
+    flex: 1,
+    backgroundColor: '#b3e1e7',
+  },
    iconBack: {
+    marginTop: 10,
      width: 20,
      height: 20,
-  
    },
+   container:{
+   borderRadius: 30,
+    marginLeft: 42,
+    marginTop: 70,
+    height: 170,
+    width: 170,
+   },
+   inputcontainer:{
+    borderRadius: 30,
+    marginLeft: 80,
+    marginTop: 60,
+    width: 250,
+    height: 420,
+    backgroundColor: '#ffff',
+   }
+
 });
 export default Router;
