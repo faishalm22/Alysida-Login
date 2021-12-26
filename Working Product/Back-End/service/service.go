@@ -179,7 +179,7 @@ func (s *service) GetOTP(ctx context.Context, identity string) (bool, error) {
 		}
 	}
 
-	code, err := util.GenerateRandom4Digits()
+	code, err := util.IntRange()
 	if err != nil {
 		return false, errors.New(util.ErrGenerateOTP)
 	}

@@ -2,6 +2,7 @@ package util
 
 import (
 	crand "crypto/rand"
+	"fmt"
 	"math/big"
 	"math/rand"
 	"strings"
@@ -69,4 +70,27 @@ func GenerateRandom4Digits() (uint64, error) {
 	}
 
 	return n.Uint64(), nil
+}
+
+func GetInt(max int) (int, error) {
+	if max <= 0 {
+		return 0, fmt.Errorf("can't define input as <=0")
+	}
+	nbig, err := crand.Int(crand.Reader, big.NewInt(int64(max)))
+	if err != nil {
+		return max, err
+	}
+	n := int(nbig.Int64())
+
+	return n, err
+}
+
+func IntRange() (uint64, error) {
+	i, err := GetInt(9999 - 0001)
+
+	if err != nil {
+		return 9999, fmt.Errorf("error getting safe int with crypto/rand")
+	}
+	i += 0001
+	return uint64(i), nil
 }
