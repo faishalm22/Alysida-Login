@@ -27,9 +27,10 @@ type (
 
 	// VerificationData untuk simpan otp
 	VerificationData struct {
-		Email     string    `json:"email" validate:"required" sql:"email"`
-		Code      string    `json:"code" validate:"required" sql:"code"`
-		ExpiresAt time.Time `json:"expires_at" sql:"expires_at"`
+		Email     	string    `json:"email" validate:"required" sql:"email"`
+		Code      	string    `json:"code" validate:"required" sql:"code"`
+		ExpiresAt 	time.Time `json:"expires_at" sql:"expires_at"`
+		CodeCreated time.Time `json:"code_created" sql:"code_created"`
 	}
 
 	// DBRepository list all db operartion for those entity

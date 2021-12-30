@@ -41,6 +41,14 @@ func NewHTTPServer(ctx context.Context, endpoints Endpoints) http.Handler {
 		encodeResponse,
 	))
 
+	putR := apiR.Methods(http.MethodPut).Subrouter()
+
+	putR.Path("/reset-password").Handler(httptransport.NewServer(
+		endpoints.ResetPassword,
+		decodeResetPassword,
+		encodeResponse,
+	))
+
 	getR := apiR.Methods(http.MethodGet).Subrouter()
 
 	getR.Path("/check-username/{username}").Handler(httptransport.NewServer(

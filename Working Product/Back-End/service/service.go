@@ -157,6 +157,7 @@ func (s *service) GetOTP(ctx context.Context, identity string) (bool, error) {
 
 	var err error
 	var user *datastruct.UserInformation
+	var users *datastruct.VerificationData
 
 	if strings.Contains(identity, "@") {
 		user, err = s.repository.GetUserByEmail(ctx, identity)
@@ -185,17 +186,24 @@ func (s *service) GetOTP(ctx context.Context, identity string) (bool, error) {
 	}
 
 	verificationData := &datastruct.VerificationData{
-		Email:     user.Email,
-		Code:      fmt.Sprint(code),
-		ExpiresAt: time.Now().Add(time.Minute * time.Duration(30)),
+		Email:     	 user.Email,
+		Code:      	 fmt.Sprint(code),
+		ExpiresAt: 	 time.Now().Add(time.Minute * time.Duration(3)),
+		CodeCreated: time.Now(),
 	}
 
-	sendEmail(user.Email, user.Username, code)
-
+	users, err = s.repository.GetVerificationData(ctx, user.Email)
+	if users != nil {
+		s.repository.DeleteVerificationData(ctx, users)
+	}
+	
 	if err = s.repository.CreateOTP(ctx, verificationData); err != nil {
 		level.Error(s.logger).Log("err", err.Error())
 		return false, errors.New(util.ErrDBPostgre)
 	}
+
+	sendEmail(user.Email, user.Username, code)
+
 	return true, nil
 }
 

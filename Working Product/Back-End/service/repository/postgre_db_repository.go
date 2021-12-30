@@ -27,10 +27,10 @@ const (
 	queryGetUserByUsername      = "SELECT * FROM tbl_mstr_user WHERE username=$1 LIMIT 1;"
 	queryEmailIsExists          = "SELECT EXISTS(SELECT 1 FROM tbl_mstr_user WHERE email=$1);"
 	queryUsernameIsExists       = "SELECT EXISTS(SELECT 1 FROM tbl_mstr_user WHERE username=$1);"
-	queryStoreOTP               = "INSERT INTO tbl_trx_verification_email(email, code, expires_at) VALUES($1, $2, $3)"
+	queryStoreOTP               = "INSERT INTO tbl_trx_verification_email(email, code, expires_at, code_created) VALUES($1, $2, $3, $4)"
 	queryGetVerificationData    = "SELECT email, code, expires_at FROM tbl_trx_verification_email WHERE email = $1 ORDER BY expires_at LIMIT 1"
 	queryUpdatePassword         = "UPDATE tbl_mstr_user SET password = $1, token_hash = $2 WHERE email = $3"
-	queryDeleteVerificationData = "DELETE FROM tbl_trx_verification_email WHERE email = $1 AND type = $2"
+	queryDeleteVerificationData = "DELETE FROM tbl_trx_verification_email WHERE email = $1"
 )
 
 // GetUserByEmail retrieves the user object having the given email, else returns error
@@ -110,6 +110,7 @@ func (repo *repo) CreateOTP(ctx context.Context, data *datastruct.VerificationDa
 		data.Email,
 		data.Code,
 		data.ExpiresAt,
+		data.CodeCreated,
 	)
 	if err != nil {
 		level.Error(repo.logger).Log("err", err.Error())
