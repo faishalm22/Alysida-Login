@@ -86,7 +86,7 @@ const CreateNewPassword = ({navigation}) => {
           <Gap height={40} />
           <Buttons
             text="Create new password"
-            backgroundcolor="#757575"
+            backgroundcolor="#0c8eff"
             textcolor="white"
             onPress={onSubmit}
           />

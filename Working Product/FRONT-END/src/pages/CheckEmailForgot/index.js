@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect, eseRef} from 'react';
 import {
   View,
   Text,
@@ -42,6 +42,15 @@ const CheckEmailForgot = ({navigation}) => {
     dispatch({type: 'SET_IDENTITY_CODE', value: pin});
   };
 
+  const [counter, setCounter] = useState(90)
+
+  useEffect(() => {
+    const timer =
+        counter > 0 && setInterval(() => setCounter(counter - 1), 1000);
+        return () => clearInterval(timer);
+  }, [counter]
+  )
+
   return (
     <ScrollView style={styles.wrapper}>
       <View style={styles.header}>
@@ -70,8 +79,7 @@ const CheckEmailForgot = ({navigation}) => {
           />
           <Gap height={20} />
           <Text style={styles.subtitle}>
-          Did not receive the email? 
-            <Text style={styles.subtitleEmail}> Click here to resend OTP code</Text>
+          Resend OTP in {counter}
           </Text>
           <Gap height={40} />
           <Gap height={40} />
