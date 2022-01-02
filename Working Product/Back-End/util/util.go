@@ -86,7 +86,7 @@ func GetInt(max int) (int, error) {
 }
 
 func IntRange() (uint64, error) {
-	i, err := GetInt(9999 - 0001)
+	i, err := GetInt(9999 - 1000)
 
 	if err != nil {
 		return 9999, fmt.Errorf("error getting safe int with crypto/rand")

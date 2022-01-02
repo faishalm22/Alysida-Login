@@ -24,7 +24,7 @@ type (
 		RefreshToken(ctx context.Context, identity, customKey string) (string, error)
 		GetOTP(ctx context.Context, usernmae string) (bool, error)
 		VerifyOTP(ctx context.Context, identity, code string) (bool, string, error)
-		ResetPassword(ctx context.Context, identity, code, password, passwordRe string) error
+		ResetPassword(ctx context.Context, identity, password, passwordRe, code string) error
 	}
 
 	service struct {
@@ -257,8 +257,9 @@ func (s *service) VerifyOTP(ctx context.Context, identity string, code string) (
 //cek kadaluarsa kode otp
 func verifyCode(actualVerificationData *datastruct.VerificationData, verificationData datastruct.VerificationData) (bool, error) {
 
+	expired := actualVerificationData.ExpiresAt
 	// check for expiration
-	if actualVerificationData.ExpiresAt.Before(time.Now()) {
+	if expired.Before(time.Now()) {
 		return false, errors.New(util.ErrPasswordResetCodeExpired)
 	}
 
@@ -309,6 +310,11 @@ func (s *service) ResetPassword(ctx context.Context, identity, password, passwor
 	if password != passwordRe {
 		level.Error(s.logger).Log("err", util.ErrPassordNotMatched)
 		return errors.New(util.ErrPassordNotMatched)
+	}	
+
+	if password == ""{
+		level.Error(s.logger).Log("err", util.ErrEmptyPassword)
+		return errors.New(util.ErrEmptyPassword)
 	}
 
 	hashedPass, err := util.PasswordHashing(password)

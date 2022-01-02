@@ -93,6 +93,7 @@ func MakeAuthEndpoints(svc Service) Endpoints {
 		EmailAvailability:    makeEmailAvailabilityRequest(svc),
 		GetOTP:               makeGetOTPEndpoint(svc),
 		VerifyOTP:            makeVerifyOTPEndpoint(svc),
+		ResetPassword: makeResetPasswordEndpoint(svc),
 	}
 }
 

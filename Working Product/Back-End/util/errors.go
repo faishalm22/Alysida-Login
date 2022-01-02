@@ -22,6 +22,7 @@ const (
 	ErrPasswordResetCodeExpired = "Confirmation code has expired. Please try generating a new code"
 	ErrPasswordResetCodeInvalid = "Verification code provided is invalid"
 	ErrPassordNotMatched        = "Password and password re-enter did not match"
+	ErrEmptyPassword			= "Password cannot be empty"
 	ErrUpdateAvatar             = "Filed to save avatar"
 	ErrGenerateOTP              = "There was an error generating the token. Please try again."
 
@@ -56,6 +57,7 @@ var statusCodeByMsg = map[string]int{
 	ErrUpdateAvatar:             http.StatusInternalServerError,
 	ErrEmailUnverified:          http.StatusUnauthorized,
 	ErrGenerateOTP:              http.StatusInternalServerError,
+	ErrEmptyPassword:			 http.StatusBadRequest,
 
 	MsgCreateUser:                 http.StatusCreated,
 	MsgLoginSuccess:               http.StatusOK,
