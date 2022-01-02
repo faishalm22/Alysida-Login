@@ -25,6 +25,14 @@ func NewHTTPServer(ctx context.Context, endpoints Endpoints) http.Handler {
 		encodeResponse,
 	))
 
+	refTokenR := apiR.Methods(http.MethodPost).Subrouter()
+	refTokenR.Use(MiddlewareValidateRefreshToken)
+	refTokenR.Path("/refresh-token").Handler(httptransport.NewServer(
+		endpoints.RefresToken,
+		decodeRefreshTokenRequest,
+		encodeResponse,
+	))
+
 	//untuk dapat otp
 	postR.Path("/get-password-reset-code").Handler(httptransport.NewServer(
 		endpoints.GetOTP,

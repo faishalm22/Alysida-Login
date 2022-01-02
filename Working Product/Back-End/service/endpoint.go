@@ -18,7 +18,7 @@ type (
 		Login                endpoint.Endpoint
 		UsernameAvailability endpoint.Endpoint
 		EmailAvailability    endpoint.Endpoint
-		RefreshToken         endpoint.Endpoint
+		RefresToken          endpoint.Endpoint
 		GetOTP               endpoint.Endpoint
 		VerifyOTP            endpoint.Endpoint
 		ResetPassword        endpoint.Endpoint
@@ -91,7 +91,7 @@ func MakeAuthEndpoints(svc Service) Endpoints {
 		Login:                makeLoginEndopint(svc),
 		UsernameAvailability: makeUsernameAvailabilityRequest(svc),
 		EmailAvailability:    makeEmailAvailabilityRequest(svc),
-		RefreshToken:         makeRefreshTokenEndopint(svc),
+		RefresToken:          makeRefreshTokenEndopint(svc),
 		GetOTP:               makeGetOTPEndpoint(svc),
 		VerifyOTP:            makeVerifyOTPEndpoint(svc),
 		ResetPassword:        makeResetPasswordEndpoint(svc),
