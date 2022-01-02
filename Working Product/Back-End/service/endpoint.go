@@ -91,9 +91,10 @@ func MakeAuthEndpoints(svc Service) Endpoints {
 		Login:                makeLoginEndopint(svc),
 		UsernameAvailability: makeUsernameAvailabilityRequest(svc),
 		EmailAvailability:    makeEmailAvailabilityRequest(svc),
+		RefreshToken:         makeRefreshTokenEndopint(svc),
 		GetOTP:               makeGetOTPEndpoint(svc),
 		VerifyOTP:            makeVerifyOTPEndpoint(svc),
-		ResetPassword: makeResetPasswordEndpoint(svc),
+		ResetPassword:        makeResetPasswordEndpoint(svc),
 	}
 }
 
