@@ -1,9 +1,125 @@
 import Axios from 'axios';
 import {API_HOST} from '../../config';
+import React, {createContext, useContext} from 'react';
+import createAuthRefreshInterceptor from 'axios-auth-refresh';
+import {useState} from 'react';
 import {showMessage, storeData, getData} from '../../utils';
+
 import {setLoading} from './global';
 
 // Axios.defaults.timeout = 5000;
+
+export const AuthContext = createContext(null);
+const {Provider} = AuthContext;
+
+export const AuthProvider = ({children}) => {
+  const [authState, setAuthState] = useState({
+    accessToken: null,
+    refreshToken: null,
+    authenticated: null,
+  });
+
+  const logout = async () => {
+     AsyncStorage.multiRemove([
+       'userProfile',
+       'tokenAccess',
+       'tokenRefresh',
+     ]).then(() => {
+       navigation.reset({index: 0, routes: [{name: 'WelcomeAuth'}]});
+    });
+  };
+
+  const getAccessToken = () => {
+    const token = getData('tokenRefresh');
+    return token;
+  };
+
+  return (
+    <Provider
+      value={{
+        authState,
+        getAccessToken,
+        setAuthState,
+        logout,
+      }}>
+      {children}
+    </Provider>
+  );
+};
+
+export const AxiosContext = createContext();
+
+export const AxiosProvider = ({children}) => {
+  const authContext = useContext(AuthContext);
+
+  const authAxios = Axios.create({
+    baseURL: `${API_HOST.url}`,
+  });
+
+  const publicAxios = Axios.create({
+    baseURL: `${API_HOST.url}`,
+  });
+
+  authAxios.interceptors.request.use(
+    config => {
+      if (!config.headers.Authorization) {
+        config.headers.Authorization = `Bearer ${authContext.getAccessToken()}`;
+      }
+
+      return config;
+    },
+    error => {
+      return Promise.reject(error);
+    },
+  );
+
+  const refreshAuthLogic = failedRequest => {
+    const data = {
+      refreshToken: authContext.authState.refreshToken,
+    };
+
+    const options = {
+      method: 'POST',
+      data,
+      url: `${API_HOST.url}/refresh-token`,
+    };
+
+    return axios(options)
+      .then(async tokenRefreshResponse => {
+        failedRequest.response.config.headers.Authorization =
+          'Bearer ' + tokenRefreshResponse.data.data.token.token_access;
+
+        authContext.setAuthState({
+          ...authContext.authState,
+          accessToken: tokenRefreshResponse.data.data.token.token_access,
+        });
+
+        const tokenAccess = `${tokenRefreshResponse.data.data.token.token_access}`;
+        storeData('tokenAccess', tokenAccess);
+        return Promise.resolve();
+      })
+      .catch(e => {
+        AsyncStorage.multiRemove([
+          'userProfile',
+          'tokenAccess',
+          'tokenRefresh',
+        ]);
+      });
+  };
+
+  createAuthRefreshInterceptor(authAxios, refreshAuthLogic, {});
+
+  return (
+    <Provider
+      value={{
+        authAxios,
+        publicAxios,
+      }}>
+      {children}
+    </Provider>
+  );
+};
+
 
 export const signInAction = (form, navigation) => (dispatch) => {
   console.log(form);
@@ -15,7 +131,7 @@ export const signInAction = (form, navigation) => (dispatch) => {
       const tokenAccess = `${res.data.data.token.token_access}`;
       const tokenRefresh = `${res.data.data.token.token_refresh}`;
       const profile = res.data.data.user;
-      profile.profile_photo_url = `${API_HOST.url}/avatar-storage/${res.data.data.user.image_file}`;
+      profile.profile_photo_url = `${API_HOST.url}/avatar-storage/`;
 
       dispatch(setLoading(false));
       storeData('tokenAccess', tokenAccess);

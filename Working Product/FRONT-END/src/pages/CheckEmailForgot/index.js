@@ -29,7 +29,7 @@ const CheckEmailForgot = ({navigation}) => {
     const data = {
       ...forgotReducer,
     };
-
+    
     // console.log(data);
     dispatch(checkTokenAction(data, navigation));
   };
@@ -44,7 +44,6 @@ const CheckEmailForgot = ({navigation}) => {
   };
    
     const [counter, SetCounter] = useState(120); 
-    const [disabled, setDisabled] = useState(true);
     const refresh = () => {
       navigation.reset({index: 0, routes: [{name: 'CheckEmailForgot'}]});
  };
