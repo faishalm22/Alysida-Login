@@ -1,4 +1,4 @@
-import React, {useState, useEffect, eseRef} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   Image,
   TextInput,
 } from 'react-native';
+import CountDown from 'react-native-countdown-component';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {Buttons, Gap} from '../../components/atoms';
 import {BackIcon} from '../../assets';
@@ -41,15 +42,13 @@ const CheckEmailForgot = ({navigation}) => {
     setCode(pin);
     dispatch({type: 'SET_IDENTITY_CODE', value: pin});
   };
-
-  const [counter, setCounter] = useState(90)
-
-  useEffect(() => {
-    const timer =
-        counter > 0 && setInterval(() => setCounter(counter - 1), 1000);
-        return () => clearInterval(timer);
-  }, [counter]
-  )
+   
+    const [counter, SetCounter] = useState(120); 
+    const [disabled, setDisabled] = useState(true);
+    const refresh = () => {
+      navigation.reset({index: 0, routes: [{name: 'CheckEmailForgot'}]});
+ };
+    
 
   return (
     <ScrollView style={styles.wrapper}>
@@ -79,9 +78,41 @@ const CheckEmailForgot = ({navigation}) => {
           />
           <Gap height={20} />
           <Text style={styles.subtitle}>
-          Resend OTP in {counter}
+         <CountDown
+            until={counter}
+            size={15}
+            onFinish={() => 
+              navigation.reset({
+            index: 0,
+            routes: [{name: 'CheckEmailForgot'}],
+          })}
+            separatorStyle={{ color: 'black' }}
+            digitStyle={{ backgroundColor: '#FFF' }}
+            digitTxtStyle={{ color: 'black' }}
+            timeToShow={['M', 'S']}
+            showSeparator
+            timeLabels={{ m: '', s: '' }}
+          />
           </Text>
-          <Gap height={40} />
+          <Gap height={15} />
+          <TouchableOpacity
+            style={{
+              height: 20,
+              width: '100%',
+            }}
+            onPress={refresh}>
+            <Text
+              style={{
+                fontFamily: 'RobotoRegular',
+                fontSize: 13,
+                color: '#0c8eff',
+                textAlign: 'center',
+              }}>
+              
+              Resend code OTP to your email{' '}
+            </Text>
+          </TouchableOpacity>
+          <Gap height={20} />
           <Gap height={40} />
           <Buttons
             text="Verify Email"
