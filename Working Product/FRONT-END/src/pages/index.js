@@ -6,7 +6,6 @@ import SuccessCreatePassword from './SuccessCreatePassword';
 import SignIn from './SignIn';
 import ForgotPassword from './ForgotPassword';
 import WelcomeAuth from './WelcomeAuth';
-import Home from './Home';
 
 export {
   SignIn,
@@ -16,6 +15,5 @@ export {
   SplashScreen,
   CheckEmailForgot,
   CreateNewPassword,
-  SuccessCreatePassword,
-  Home
+  SuccessCreatePassword
 };

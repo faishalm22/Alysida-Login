@@ -4,7 +4,7 @@ import React, {createContext, useContext} from 'react';
 import createAuthRefreshInterceptor from 'axios-auth-refresh';
 import {useState} from 'react';
 import {showMessage, storeData, getData} from '../../utils';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {setLoading} from './global';
 
 // Axios.defaults.timeout = 5000;
@@ -87,14 +87,14 @@ export const AxiosProvider = ({children}) => {
     return axios(options)
       .then(async tokenRefreshResponse => {
         failedRequest.response.config.headers.Authorization =
-          'Bearer ' + tokenRefreshResponse.data.data.token.token_access;
+          'Bearer ' + tokenRefreshResponse.data.refreshToken;
 
         authContext.setAuthState({
           ...authContext.authState,
-          accessToken: tokenRefreshResponse.data.data.token.token_access,
+          accessToken: tokenRefreshResponse.data.refreshToken,
         });
 
-        const tokenAccess = `${tokenRefreshResponse.data.data.token.token_access}`;
+        const tokenAccess = `${tokenRefreshResponse.data.refreshToken}`;
         storeData('tokenAccess', tokenAccess);
         return Promise.resolve();
       })

@@ -1,20 +1,20 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   Image,
-  TextInput,
 } from 'react-native';
 import CountDown from 'react-native-countdown-component';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {Buttons, Gap} from '../../components/atoms';
 import {BackIcon} from '../../assets';
-import {showMessage, useForm} from '../../utils';
 import {useDispatch, useSelector} from 'react-redux';
 import {checkTokenAction} from '../../redux/action';
 import SmoothPinCodeInput from 'react-native-smooth-pincode-input';
+import {forgotPasswordAction} from '../../redux/action';
+
 
 const CheckEmailForgot = ({navigation}) => {
   const [code, setCode] = useState('');
@@ -22,6 +22,16 @@ const CheckEmailForgot = ({navigation}) => {
   const dispatch = useDispatch();
 
   const {forgotReducer} = useSelector((state) => state);
+
+  const onRefresh = () => {
+
+    const data = {
+      ...forgotReducer,
+    };
+    console.log(data);
+
+    dispatch(forgotPasswordAction(data, navigation));
+  };
 
   const onSubmit = () => {
     dispatch({type: 'SET_IDENTITY_CODE', value: code});
@@ -80,11 +90,7 @@ const CheckEmailForgot = ({navigation}) => {
          <CountDown
             until={counter}
             size={15}
-            onFinish={() => 
-              navigation.reset({
-            index: 0,
-            routes: [{name: 'CheckEmailForgot'}],
-          })}
+            onFinish={onRefresh}
             separatorStyle={{ color: 'black' }}
             digitStyle={{ backgroundColor: '#FFF' }}
             digitTxtStyle={{ color: 'black' }}
@@ -99,7 +105,7 @@ const CheckEmailForgot = ({navigation}) => {
               height: 20,
               width: '100%',
             }}
-            onPress={refresh}>
+            onPress={onRefresh}>
             <Text
               style={{
                 fontFamily: 'RobotoRegular',

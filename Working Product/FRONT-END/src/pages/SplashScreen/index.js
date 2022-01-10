@@ -1,6 +1,5 @@
 import React, {useEffect} from 'react';
-import {StyleSheet, Text, View, Image} from 'react-native';
-import {Gap} from '../../components';
+import {StyleSheet, View, Image} from 'react-native';
 import {getData} from '../../utils';
 import {LogoSadhel} from '../../assets';
 

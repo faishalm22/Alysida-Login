@@ -2,7 +2,7 @@ import React from 'react';
 import {View, Text, StyleSheet, ScrollView, Image} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {Buttons, Gap} from '../../components/atoms';
-import {SuccessIllustration, BackIcon} from '../../assets';
+import {SuccessIllustration} from '../../assets';
 import {CloseIcon} from '../../assets';
 
 const SuccessCreatePassword = ({navigation}) => {

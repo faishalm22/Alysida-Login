@@ -1,6 +1,5 @@
 import React from 'react';
 import {StyleSheet, Text, View, ImageBackground} from 'react-native';
-//import {TouchableOpacity} from 'react-native-gesture-handler';
 import {Buttons, Gap} from '../../components/atoms';
 import {ButtonGoogle} from '../../components/molecules';
 import {DummyBanner} from '../../assets';

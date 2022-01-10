@@ -4,8 +4,8 @@ import {View,StyleSheet, Image} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import { BackIcon, } from '../assets';
 import { Buttons, Gap } from '../components/atoms';
-import {signInAction} from '../redux/action';
 import {LogoGroup} from '../assets';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   SplashScreen,
   WelcomeAuth,
@@ -15,25 +15,26 @@ import {
   CheckEmailForgot,
   SuccessCreatePassword,
   CreateNewPassword,
-  Profile,
-  ProfileMenus,
   Home
 } from '../pages';
 import {BottomNavigator} from '../components';
 
 const Stack = createStackNavigator();
-const onSubmit = () => {
-  dispatch(signInAction(form, navigation));
-};
 //const Tab = createBottomTabNavigator();
 
 const MainApp = ({navigation}) => {
-  const handleGoTo = (screen) => {
-    navigation.navigate(screen);
+   const signOut = () => {
+    AsyncStorage.multiRemove([
+       'userProfile',
+       'tokenAccess',
+       'tokenRefresh',
+     ]).then(() => {
+       navigation.reset({index: 0, routes: [{name: 'WelcomeAuth'}]});
+     });
   };
    return (
        <View style={styles.wrapper}>
-              <TouchableOpacity onPress={() => handleGoTo('WelcomeAuth')}>
+              <TouchableOpacity onPress={signOut}>
             <Image source={BackIcon} style={styles.iconBack} />
           </TouchableOpacity>
             <View style={styles.inputcontainer}>
@@ -43,7 +44,7 @@ const MainApp = ({navigation}) => {
                   text="Log Out"
                   backgroundcolor="#457b9d"
                   textcolor="white"
-                  onPress={onSubmit}
+                  onPress={signOut}
                 />
               </View>
               
@@ -96,11 +97,6 @@ const Router = () => {
       <Stack.Screen
         name="SignIn"
         component={SignIn}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="Home"
-        component={Home}
         options={{headerShown: false}}
       />
       <Stack.Screen

@@ -9,8 +9,8 @@ import {
 } from 'react-native';
 import {TextInputIcon, Buttons, Gap} from '../../components/atoms';
 import {ButtonGoogle} from '../../components/molecules';
-import {showMessage, useForm} from '../../utils';
-import {useDispatch, useSelector} from 'react-redux';
+import {useForm} from '../../utils';
+import {useDispatch} from 'react-redux';
 import {BackIcon, UserIcon, UserIconActive} from '../../assets';
 import {forgotPasswordAction} from '../../redux/action';
 
@@ -21,7 +21,7 @@ const ForgotPassword = ({navigation}) => {
 
   const dispatch = useDispatch();
 
-  const onSubmit = () => {
+  const onSubmitt = () => {
     dispatch({type: 'SET_IDENTITY', value: form});
 
     const data = {
@@ -65,7 +65,7 @@ const ForgotPassword = ({navigation}) => {
             text="Next"
             backgroundcolor="#0c8eff"
             textcolor="white"
-            onPress={onSubmit}
+            onPress={onSubmitt}
           />
           <Gap height={50} />
           <View
